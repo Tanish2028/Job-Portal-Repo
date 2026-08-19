@@ -22,14 +22,18 @@ export const registerCompany = async (req,res) =>{
         const companyExists = await Company.findOne({email});
 
         if(companyExists){
-            return res.json({success:"false",message:"Already exists"})
+            return res.json({success:false,message:"Already exists"})
         }
 
         const salt = await bcrypt.genSalt(10)
+        
+        // console.log(imageFile)
 
         const hashPassword = await bcrypt.hash(password,salt)
 
         const imageUpload = await cloudinary.uploader.upload(imageFile.path);
+        
+        // console.log(imageUpload)
 
         const company = await Company.create({
             name,email,password:hashPassword,
@@ -48,6 +52,8 @@ export const registerCompany = async (req,res) =>{
         })
 
     } catch (error) {
+        console.error("Uploading to cloudinary",imageFile.path)
+        console.error(error.message)
         return res.json({success:false,message:error.message})
     }
 }
